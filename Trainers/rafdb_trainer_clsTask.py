@@ -19,12 +19,22 @@ from torch.autograd import Variable
 from torch.optim.lr_scheduler import MultiplicativeLR, StepLR, MultiStepLR, ConstantLR, LinearLR, PolynomialLR, CosineAnnealingLR, ChainedScheduler, ExponentialLR, SequentialLR, ReduceLROnPlateau, CyclicLR, CosineAnnealingWarmRestarts
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Utils/Metrics')))
-from Metrics import classify_metrics
+from classify_metrics import accuracy, make_batch
 
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
+def create_CSV(output_csv_path):
+  df = pd.DataFrame(columns=['epoch', 'learning_rate','accuracy', 'loss', 'val_accuracy', 'val_loss'])
+  df.to_csv(output_csv_path, index=False)
+
+def update_output_csv(output_csv_path, epoch, lr, accuracy, loss, val_accuracy, val_loss):
+  df = pd.read_csv(output_csv_path)
+  new_line = pd.DataFrame({'epoch':[epoch], 'learning_rate':[lr],'accuracy':[accuracy], 'loss':[loss], 'val_accuracy':[val_accuracy], 'val_loss':[val_loss]})
+  new_line = new_line[df.columns]
+  df = pd.concat([df, new_line], ignore_index=True)
+  df.to_csv(output_csv_path, index=False)
 
 class Trainer(object):
     """base class for trainers"""
@@ -34,18 +44,17 @@ class Trainer(object):
 
 
 class RAFDB_Trainer(Trainer):
-  def __init__(self, model, train_loader, val_loader, test_loader,test_loader_ttau, configs, wb = True):
+  def __init__(self, model, train_loader, val_loader, test_loader,test_loader_ttau, configs, wb = False, output_csv_path = '/kaggle/working/out.csv', initial_best_val_acc = 0.0):
 
     self.train_loader = train_loader
     self.val_loader = val_loader
     self.test_loader = test_loader
     self.test_loader_ttau = test_loader_ttau
-
-
+    self.output_csv_path = output_csv_path
+    create_CSV(output_csv_path = self.output_csv_path)
     self.configs = configs
 
     self.batch_size = configs["batch_size"]
-    self.debug = configs["debug"]
     # self.epochs = configs["epochs"]
     self.learning_rate = configs["lr"]
     self.min_lr = configs["min_lr"]
@@ -58,7 +67,6 @@ class RAFDB_Trainer(Trainer):
     self.distributed = configs["distributed"]
     self.optimizer_chose = configs["optimizer_chose"]
     self.lr_scheduler_chose = configs["lr_scheduler"]
-    self.isDebug = configs["isDebug"]
     self.name_run_wandb = configs["name_run_wandb"]
     self.wb = wb
 
@@ -81,7 +89,7 @@ class RAFDB_Trainer(Trainer):
     self.val_loss_list = []
     self.val_acc_list = []
     self.best_train_acc = 0.0
-    self.best_val_acc = 0.0
+    self.best_val_acc = initial_best_val_acc
     self.best_train_loss = 0.0
     self.best_val_loss = 0.0
     self.test_acc = 0.0
@@ -89,7 +97,6 @@ class RAFDB_Trainer(Trainer):
     self.plateau_count = 0
     #self.current_epoch_num = 0
     self.current_epoch_num = configs["current_epoch_num"]
-    self.load_state_dir = configs["load_state_dir"]
     # Set information for training
     self.start_time = datetime.datetime.now()
 
@@ -99,27 +106,6 @@ class RAFDB_Trainer(Trainer):
                                         (self.configs["project_name"], self.configs["model"], self.start_time.strftime("%Y%b%d_%H.%M"),))'''
 
     self.checkpoint_path = os.path.join(self.checkpoint_dir,"ResnetDuck_Cbam_cuaTuan")
-    # load dataset
-    if self.isDebug == 1:
-      print("Debug mode activated")
-
-      self.max_epoch_num = 60
-
-      n_train_debug = 100 if len(train_loader)> 100 else len(train_loader)
-      self.train_loader.label = train_loader.label[: n_train_debug]
-      self.train_loader.file_paths = train_loader.file_paths[: n_train_debug]
-
-      n_val_debug = 100 if len(val_loader)> 100 else len(val_loader)
-      self.val_loader.label = val_loader.label[: n_val_debug]
-      self.val_loader.file_paths = val_loader.file_paths[: n_val_debug]
-
-      n_test_debug = 100 if len(test_loader)> 100 else len(test_loader)
-      self.test_loader.label = test_loader.label[: n_test_debug]
-      self.test_loader.file_paths = test_loader.file_paths[: n_test_debug]
-
-      n_test_ttau_debug = 100 if len(test_loader_ttau)> 100 else len(test_loader_ttau)
-      self.test_loader_ttau.label = test_loader_ttau.label[: n_test_ttau_debug]
-      self.test_loader_ttau.file_paths = test_loader_ttau.file_paths[: n_test_ttau_debug]
 
     if self.distributed == 1:
             torch.distributed.init_process_group(backend="nccl")
@@ -233,8 +219,7 @@ class RAFDB_Trainer(Trainer):
         patience=self.configs["plateau_patience"],
         min_lr=self.min_lr,
         # factor = torch.exp(torch.Tensor([-0.1])),
-        verbose=True,
-        factor = 0.1,
+        factor = 0.5,
       )
       print("The selected learning_rate scheduler strategy is ReduceLROnPlateau")
     elif self.lr_scheduler_chose == "MultiStepLR":
@@ -259,9 +244,10 @@ class RAFDB_Trainer(Trainer):
       print("The selected learning_rate scheduler strategy is CosineAnnealingWarmRestarts")
 
     else: #default ="ReduceLROnPlateau"
-      self.lr_scheduler_chose = None
-      print("No choosing Learning rate scheduler")
-
+      self.lr_scheduler_chose = 'None'
+      lambda_lr = lambda epoch: 1.0  # Không thay đổi learning rate
+      self.scheduler = LambdaLR(self.optimizer, lr_lambda=lambda_lr)
+      print(f"No choosing Learning rate scheduler(lr={self.learning_rate})")
 
        
   def init_wandb(self):
@@ -450,12 +436,6 @@ class RAFDB_Trainer(Trainer):
     self.init_wandb()
     #self.scheduler.step(100 - self.best_val_acc)
     try:
-      if self.load_state_dir != "":
-        #shutil.copy(self.load_state_dir, self.checkpoint_path)
-        my_checkpoint_path = torch.load(self.checkpoint_path)
-        self.model.load_state_dict(my_checkpoint_path['net'])
-        self.optimizer.load_state_dict(my_checkpoint_path['optimizer'])
-        print("loaded old weight successful")
       while not self.stop_train():
         self.update_epoch_num()
         self.step_per_train()
@@ -487,6 +467,7 @@ class RAFDB_Trainer(Trainer):
     print(" Best Accuracy on Val: {:.3f} ".format(self.best_val_acc))
     print(" Best Accuracy on Test: {:.3f} ".format(self.test_acc))
     print(" Best Accuracy on Test with tta: {:.3f} ".format(self.test_acc_ttau))
+    return self.model, self.best_val_acc
 
   #set up for training (update epoch, stopping training, write logging)
   def update_epoch_num(self):
@@ -509,6 +490,16 @@ class RAFDB_Trainer(Trainer):
       print(f'Weight was updated because val_accuracy get highest(={self.val_acc_list[-1]})')
     else:
       self.plateau_count += 1
+    
+    #update CSV
+    update_output_csv(output_csv_path = self.output_csv_path, 
+                      epoch=len(self.val_acc_list),
+                      lr = self.optimizer.param_groups[0]['lr'], 
+                      accuracy = self.train_acc_list[-1],
+                      loss = self.train_loss_list[-1],
+                      val_accuracy = self.val_acc_list[-1],
+                      val_loss = self.val_loss_list[-1])
+
 # 100 - self.best_val_acc
     if self.lr_scheduler_chose == "ReduceLROnPlateau":
       self.scheduler.step(self.val_acc_list[-1])
