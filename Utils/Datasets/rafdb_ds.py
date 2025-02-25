@@ -10,7 +10,7 @@ from torch.utils.data import Dataset
 import torchvision
 import torch
 
-sys.path.append('../Augs/augmenters')
+sys.path.append('Augs/augmenters')
 from augmenters import RAFDB_Augumentations as RAFDB_aug
 
 class RafDataSet(Dataset):
