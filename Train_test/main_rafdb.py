@@ -23,9 +23,9 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-sys.path.append('../Utils/Datasets/rafdb')
+sys.path.append('../Utils/Datasets')
 
-import RafDataSet
+from rafdb_ds import RafDataSet
 
 from .Models.resnet import resnet50, resnet50_vggface2_ft
 
