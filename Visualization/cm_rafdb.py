@@ -36,7 +36,8 @@ from rafdb_ds import RafDataSet
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Models/Classification_Task')))
 from resnet import resnet50, resnet50_vggface2_ft
 
-
+config_path = os.path.join(os.path.dirname(__file__), '..', 'Configs', 'config_rafdb.json')
+configs = json.load(open(config_path))
 
 import argparse 
 parser = argparse.ArgumentParser()
