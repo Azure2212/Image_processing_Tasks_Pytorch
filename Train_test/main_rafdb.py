@@ -25,7 +25,7 @@ torch.backends.cudnn.benchmark = False
 
 sys.path.append('../Utils/Datasets/rafdb')
 
-from rafdb_ds import RafDataSet
+import RafDataSet
 
 from .Models.resnet import resnet50, resnet50_vggface2_ft
 
