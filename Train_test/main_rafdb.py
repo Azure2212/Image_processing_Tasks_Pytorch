@@ -46,7 +46,6 @@ parser.add_argument('--current-epoch-num', default= 0, type=int, help='epoch sta
 parser.add_argument('--max-epoch-num', default= 1000, type=int, help='epoch start')
 parser.add_argument('--freeze-cbam', default= 0, type=int, help='epoch start')
 args, unknown = parser.parse_known_args()
-max_epoch_num
 
 print(torch.__version__)
 
