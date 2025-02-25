@@ -44,6 +44,7 @@ parser.add_argument('--use-pretrained', default= 1, type=int, help='use pre-trai
 parser.add_argument('--use-cbam', default= 1, type=int, help='use cbam= 1')
 parser.add_argument('--current-epoch-num', default= 0, type=int, help='epoch start')
 parser.add_argument('--max-epoch-num', default= 1000, type=int, help='epoch start')
+parser.add_argument('--freeze-cbam', default= 0, type=int, help='epoch start')
 args, unknown = parser.parse_known_args()
 max_epoch_num
 
@@ -73,8 +74,33 @@ elif args.model_name == 'resnet50_vggface2_ft':
     print('resnet50 with pre-train on vggface2(trained on MS1M, and then fine-tuned on VGGFace2) was chose !')
     model = resnet50_vggface2_ft(pretrained = True if args.use_pretrained == 1 else False, use_cbam = True if args.use_cbam == 1 else False)
 
-for name, layer in model.named_children():
-    print(f"{name}: {layer}")
+
+# for name, layer in model.named_children():
+#     print(f"{name}: {layer}")
+configs['freeze_cbam'] == True if args.freeze_cbam == 1 else 0
+if configs['freeze_cbam'] == True:
+    print("go freeze")
+    layers = [3, 4, 6, 3]  
+    layer_names = ['layer1', 'layer2', 'layer3', 'layer4']
+    
+    for name, layer in model.named_children():
+        if isinstance(layer, torch.nn.Module):  # Only consider actual layers
+            if name == 'fc':
+                continue
+            for param in layer.parameters():
+                param.requires_grad = False
+
+    # Unfreeze CBAM blocks as specified by the layers
+    for i, layer_name in enumerate(layer_names):
+        if hasattr(model, layer_name):
+            layer = getattr(model, layer_name)
+            for idx in range(layers[i]):
+                for param in layer[idx].CbamBlock.parameters():
+                    param.requires_grad = True
+            
+    for name, param in model.named_parameters():
+        print(f"{name}: {param.requires_grad}")
+
 print(f"the number of parameter: {sum(p.numel() for p in model.parameters())}")
 
 trainer = RAFDB_Trainer(model, train_loader, test_loader, test_loader, test_loader_ttau, configs)

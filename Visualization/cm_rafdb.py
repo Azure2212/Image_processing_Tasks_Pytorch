@@ -42,14 +42,9 @@ parser.add_argument('--model-name', default= "resnet50", type=str, help='model2T
 parser.add_argument('--rs-dir', default= "ResnetDuck_Cbam_cuaTuan", type=str, help='rs dir in kaggle')
 
 args, unknown = parser.parse_known_args()
-path_current = os.path.abspath(globals().get("__file__","."))
-script_dir  = os.path.dirname(path_current)
-root_path = os.path.abspath(f"{script_dir}/../")
-config_path = root_path+"/configs/config_rafdb.json"  # Adjust the path as needed
 
+config_path = os.path.join(os.path.dirname(__file__), '..', 'Configs', 'config_rafdb.json')
 configs = json.load(open(config_path))
-
-
 
 test_loader_ttau = RafDataSet("test", configs, ttau = True, len_tta = 10) 
 
