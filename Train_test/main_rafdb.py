@@ -22,7 +22,7 @@ np.random.seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Datasets')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '/Utils/Datasets')))
 from rafdb_ds import RafDataSet
 
 from .Models.resnet import resnet50, resnet50_vggface2_ft
