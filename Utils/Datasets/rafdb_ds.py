@@ -11,6 +11,7 @@ import torchvision
 import torch
 
 sys.path.append('Augs/augmenters')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Augs')))
 from augmenters import RAFDB_Augumentations as RAFDB_aug
 
 class RafDataSet(Dataset):
