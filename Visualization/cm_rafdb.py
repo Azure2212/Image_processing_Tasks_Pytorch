@@ -27,11 +27,14 @@ np.random.seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Utils/Datasets')))
 from ..Utils.datasets.rafdb_ds import RafDataSet
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Models/Classification_Task')))
 from ..Models.resnet_v2 import  resnet50_vggface2_ft
 
-from ..Utils.metrics.classify_metrics import accuracy, make_batch
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Utils/Metrics')))
+from classify_metrics import accuracy, make_batch
 
 import argparse
 parser = argparse.ArgumentParser()
