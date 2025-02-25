@@ -47,8 +47,7 @@ args, unknown = parser.parse_known_args()
 
 print(torch.__version__)
 
-config_path = "../Configs/config_rafdb.json"
-
+config_path = os.path.join(os.path.dirname(__file__), '..', 'Configs', 'config_rafdb.json')
 configs = json.load(open(config_path))
 
 configs["optimizer_chose"] = args.optimizer_chose
