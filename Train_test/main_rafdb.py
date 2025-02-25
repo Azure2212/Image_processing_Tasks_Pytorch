@@ -65,6 +65,8 @@ train_loader = RafDataSet( "train", configs)
 test_loader_ttau = RafDataSet("test", configs, ttau = True, len_tta = 10) 
 test_loader = RafDataSet("test", configs, ttau = False, len_tta = 48) 
 
+print(configs)
+
 model = None
 if args.model_name == 'resnet50_vggface2':
     print('resnet50 with pre-train on vggface2(trained from cratch) was chose !')
