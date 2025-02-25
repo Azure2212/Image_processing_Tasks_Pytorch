@@ -17,8 +17,8 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torch.optim.lr_scheduler import MultiplicativeLR, StepLR, MultiStepLR, ConstantLR, LinearLR, PolynomialLR, CosineAnnealingLR, ChainedScheduler, ExponentialLR, SequentialLR, ReduceLROnPlateau, CyclicLR, CosineAnnealingWarmRestarts
 
-from ..Utils.Metrics import classify_metrics
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Utils/Metrics')))
+from Metrics import classify_metrics
 
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:
