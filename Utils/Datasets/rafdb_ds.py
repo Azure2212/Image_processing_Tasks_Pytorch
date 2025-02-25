@@ -9,7 +9,8 @@ from torch.utils.data import Dataset
 import torchvision
 import torch
 
-from Augs.augmenters import RAFDB_Augumentations as RAFDB_aug
+sys.path.append('../Augs')
+from augmenters import RAFDB_Augumentations as RAFDB_aug
 
 class RafDataSet(Dataset):
     def __init__(self, data_type, configs,  ttau = False, len_tta = 48, use_albumentation = True):
