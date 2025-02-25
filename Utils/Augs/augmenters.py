@@ -4,7 +4,7 @@ from albumentations.pytorch import ToTensorV2
 import numpy as np
 import cv2
 
-def RAFDB_Augumentations:
+class RAFDB_Augumentations:
         seg_raf = iaa.Sometimes(
                 0.5,
                 iaa.Sequential([iaa.Fliplr(p=0.5), iaa.Affine(rotate=(-25, 25))]),
