@@ -25,9 +25,11 @@ torch.backends.cudnn.benchmark = False
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Utils/Datasets')))
 from rafdb_ds import RafDataSet
 
-from .Models.resnet import resnet50, resnet50_vggface2_ft
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Models/Classification_Task')))
+from resnet import resnet50, resnet50_vggface2_ft
 
-from .Trainers.rafdb_trainer_v5 import RAFDB_Trainer
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Trainers')))
+from rafdb_trainer_clsTask import RAFDB_Trainer
 
 #from sgu24project.models.resnet_cbam_v5 import resnet50_co_cbam
 import argparse 
