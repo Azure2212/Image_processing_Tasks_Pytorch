@@ -43,7 +43,9 @@ parser.add_argument('--isDebug', default= 0, type=int, help='debug = 1')
 parser.add_argument('--use-pretrained', default= 1, type=int, help='use pre-trained = 1')
 parser.add_argument('--use-cbam', default= 1, type=int, help='use cbam= 1')
 parser.add_argument('--current-epoch-num', default= 0, type=int, help='epoch start')
+parser.add_argument('--max-epoch-num', default= 1000, type=int, help='epoch start')
 args, unknown = parser.parse_known_args()
+max_epoch_num
 
 print(torch.__version__)
 
@@ -55,6 +57,7 @@ configs["lr_scheduler"] = args.lr_scheduler
 configs["lr"] = args.lr_value
 configs["isDebug"] = args.isDebug
 configs["current_epoch_num"] = args.current_epoch_num
+configs["max_epoch_num"] = args.max_epoch_num
 if args.load_state_dir != '':
     configs["load_state_dir"] = args.load_state_dir
 
