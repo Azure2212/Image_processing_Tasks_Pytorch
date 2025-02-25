@@ -76,8 +76,7 @@ elif args.model_name == 'resnet50_vggface2_ft':
 
 # for name, layer in model.named_children():
 #     print(f"{name}: {layer}")
-print(args.freeze_cbam)
-configs['freeze_cbam'] == True if args.freeze_cbam == 1 else False
+configs['freeze_cbam'] = True if args.freeze_cbam == 1 else False
 if configs['freeze_cbam'] == True:
     print("go freeze")
     layers = [3, 4, 6, 3]  
