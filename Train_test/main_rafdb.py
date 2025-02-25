@@ -43,8 +43,8 @@ parser.add_argument('--isDebug', default= 0, type=int, help='debug = 1')
 parser.add_argument('--use-pretrained', default= 1, type=int, help='use pre-trained = 1')
 parser.add_argument('--use-cbam', default= 1, type=int, help='use cbam= 1')
 parser.add_argument('--current-epoch-num', default= 0, type=int, help='epoch start')
-parser.add_argument('--max-epoch-num', default= 1000, type=int, help='epoch start')
-parser.add_argument('--freeze-cbam', default= 0, type=int, help='epoch start')
+parser.add_argument('--max-epoch-num', default= 1000, type=int, help='Max epoch')
+parser.add_argument('--freeze-cbam', default= 0, type=int, help='use Freezing')
 args, unknown = parser.parse_known_args()
 
 print(torch.__version__)
@@ -76,6 +76,7 @@ elif args.model_name == 'resnet50_vggface2_ft':
 
 # for name, layer in model.named_children():
 #     print(f"{name}: {layer}")
+print(args.freeze_cbam)
 configs['freeze_cbam'] == True if args.freeze_cbam == 1 else False
 if configs['freeze_cbam'] == True:
     print("go freeze")
