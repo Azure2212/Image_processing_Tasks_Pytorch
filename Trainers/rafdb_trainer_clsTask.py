@@ -220,7 +220,7 @@ class RAFDB_Trainer(Trainer):
         patience=self.configs["plateau_patience"],
         min_lr=self.min_lr,
         # factor = torch.exp(torch.Tensor([-0.1])),
-        factor = 0.5,
+        factor = 0.1,
       )
       print("The selected learning_rate scheduler strategy is ReduceLROnPlateau")
     elif self.lr_scheduler_chose == "MultiStepLR":
