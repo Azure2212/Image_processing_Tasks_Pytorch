@@ -99,8 +99,8 @@ if configs['freeze_cbam'] == True:
                 for param in layer[idx].CbamBlock.parameters():
                     param.requires_grad = True
             
-    for name, param in model.named_parameters():
-        print(f"{name}: {param.requires_grad}")
+for name, param in model.named_parameters():
+    print(f"{name}: {param.requires_grad}")
 
 print(f"the number of parameter: {sum(p.numel() for p in model.parameters())}")
 
