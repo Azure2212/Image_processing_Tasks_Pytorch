@@ -27,11 +27,11 @@ class FER2013DataSet(Dataset):
         emotion_mapping_rafdb_fer2013 = {'surprise':0, 'fear':1, 'disgust':2, 'happy':3, 'sad':4, 'angry':5, 'neutral':6}
         emotion_Folders = os.path.join(self.configs["fer2013_path"], data_type)
 
-        for i, emotion in enumerate(emotion_mapping_rafdb_fer2013):
+        for emotion in emotion_mapping_rafdb_fer2013:
             images_path = os.listdir(os.path.join(emotion_Folders, emotion))
             images = [os.path.join(emotion_Folders, emotion, image)for image in images_path]
             self.file_paths.extend(images)
-            self.label.extend([i]*len(images))
+            self.label.extend(emotion_mapping_rafdb_fer2013[emotion]*len(images))
 
         self.transform = transforms.Compose(
         [
