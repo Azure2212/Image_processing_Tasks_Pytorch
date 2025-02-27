@@ -33,7 +33,6 @@ class FER2013DataSet(Dataset):
             self.file_paths.extend(images)
             self.label.extend([i]*len(images))
 
-        print(self.file_paths)
         self.transform = transforms.Compose(
         [
             transforms.ToPILImage(),
