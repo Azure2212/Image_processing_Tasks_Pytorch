@@ -29,7 +29,7 @@ class FER2013DataSet(Dataset):
 
         for i, emotion in enumerate(emotion_mapping_rafdb_fer2013):
             images_path = os.listdir(os.path.join(emotion_Folders, emotion))
-            images_path = [os.path.join(images_path, image) for image in images]
+            images_path = [os.path.join(images_path, image) for image in images_path]
             self.file_paths.extend(images)
             self.label.extend([i]*len(images))
 
