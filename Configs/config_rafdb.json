@@ -1,5 +1,6 @@
 {
     "raf_path": "/kaggle/input/rafdb-basic",
+    "fer2013_path": "/kaggle/input/fer2013",
     "image_path": "rafdb_basic/Image/aligned/",
     "label_path": "rafdb_basic/EmoLabel/list_patition_label.txt",
     "image_size": 224,
