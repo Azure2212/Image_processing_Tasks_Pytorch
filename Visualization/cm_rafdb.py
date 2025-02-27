@@ -78,6 +78,7 @@ def plot_confusion_matrix(model, testloader,title = "My model"):
             preds = torch.sum(preds, 0)
             preds = torch.argmax(preds, 0)
             preds = preds.item()
+            print(labels)
             labels = labels.item()
             total += 1
             correct += preds == labels

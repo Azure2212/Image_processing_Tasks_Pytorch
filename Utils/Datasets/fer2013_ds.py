@@ -32,8 +32,6 @@ class FER2013DataSet(Dataset):
             images = [os.path.join(emotion_Folders, emotion, image)for image in images_path]
             self.file_paths.extend(images)
             self.label.extend([emotion_mapping_rafdb_fer2013[emotion]]*len(images))
-        print(self.file_paths)
-        print(self.label)
         self.transform = transforms.Compose(
         [
             transforms.ToPILImage(),
