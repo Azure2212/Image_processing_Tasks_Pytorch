@@ -17,7 +17,7 @@
     "num_workers": 2,
     "max_plateau_count": 50,
     "max_epoch_num": 1000,
-    "plateau_patience": 10,
+    "plateau_patience": 5,
     "steplr": 50,
     "optimizer_chose":"RAdam",
     "lr_scheduler":"ReduceLROnPlateau",
