@@ -32,6 +32,7 @@ import seaborn as sns
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Utils/Datasets')))
 from rafdb_ds import RafDataSet
+from fer2013_ds import FER2013DataSet
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Models/Classification_Task')))
 from resnet import resnet50, resnet50_vggface2_ft
@@ -47,6 +48,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model-name', default= "ResNet50_CBAM", type=str, help='model2Train')
 parser.add_argument('--rs-path', default= "/kaggle/working/ResnetDuck_Cbam_cuaTuan", type=str, help='trained_weight')
 parser.add_argument('--statistic-path', default= '/kaggle/working/out.csv', type=str, help='trained statistic')
+parser.add_argument('--dataset-used', default= 'RAFDB', type=str, help='RAFDB or FER2013')
 parser.add_argument('--use-cbam', default= 1, type=int, help='use cbam= 1')
 args, unknown = parser.parse_known_args()
 
@@ -150,7 +152,10 @@ def training_process_statistic(rs_path):
     plt.legend()
    
 if __name__ == '__main__':
-    test_loader_ttau = RafDataSet("test", configs, ttau = True, len_tta = 10) 
+    if args.dataset_used == 'RAFDB':
+        test_loader_ttau = RafDataSet("test", configs, ttau = True, len_tta = 10) 
+    else:
+        test_loader_ttau = FER2013DataSet("test", configs, ttau = True, len_tta = 10) 
     model = resnet50_vggface2_ft(use_cbam = True if args.use_cbam == 1 else False)
     state = torch.load(args.rs_path)     
     model.load_state_dict(state["net"])
