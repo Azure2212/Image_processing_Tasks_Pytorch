@@ -31,9 +31,8 @@ class FER2013DataSet(Dataset):
             images = os.listdir(os.path.join(emotion_Folders, emotion))
             self.file_paths.extend(images)
             self.label.extend([i]*len(images))
-            print(f'number of images:{len(self.file_paths)}')
-            print(f'number of images:{len(self.label)}')
 
+        print(self.file_paths)
         self.transform = transforms.Compose(
         [
             transforms.ToPILImage(),
