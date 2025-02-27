@@ -31,7 +31,7 @@ class FER2013DataSet(Dataset):
             images_path = os.listdir(os.path.join(emotion_Folders, emotion))
             images = [os.path.join(emotion_Folders, emotion, image)for image in images_path]
             self.file_paths.extend(images)
-            self.label.extend(emotion_mapping_rafdb_fer2013[emotion]*len(images))
+            self.label.extend([emotion_mapping_rafdb_fer2013[emotion]]*len(images))
             print(f'emotion: {emotion}, value: {emotion_mapping_rafdb_fer2013[emotion]}')
 
         self.transform = transforms.Compose(
