@@ -24,6 +24,7 @@ torch.backends.cudnn.benchmark = False
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Utils/Datasets')))
 from rafdb_ds import RafDataSet
+from fer2013_ds import FER2013DataSet
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../Models/Classification_Task')))
 from resnet import resnet50, resnet50_vggface2_ft
@@ -45,6 +46,7 @@ parser.add_argument('--use-cbam', default= 1, type=int, help='use cbam= 1')
 parser.add_argument('--current-epoch-num', default= 0, type=int, help='epoch start')
 parser.add_argument('--max-epoch-num', default= 1000, type=int, help='Max epoch')
 parser.add_argument('--freeze-cbam', default= 0, type=int, help='use Freezing')
+parser.add_argument('--dataset-used', default= 'RAFDB', type=str, help='RAFDB or FER2013')
 args, unknown = parser.parse_known_args()
 
 print(torch.__version__)
@@ -61,9 +63,15 @@ configs["max_epoch_num"] = args.max_epoch_num
 if args.load_state_dir != '':
     configs["load_state_dir"] = args.load_state_dir
 
-train_loader = RafDataSet( "train", configs)
-test_loader_ttau = RafDataSet("test", configs, ttau = True, len_tta = 10) 
-test_loader = RafDataSet("test", configs, ttau = False, len_tta = 48) 
+if args.dataset_used == 'RAFDB':
+    train_loader = RafDataSet( "train", configs)
+    test_loader_ttau = RafDataSet("test", configs, ttau = True, len_tta = 10) 
+    test_loader = RafDataSet("test", configs, ttau = False, len_tta = 48) 
+
+else:
+    train_loader = FER2013DataSet( "train", configs)
+    test_loader_ttau = FER2013DataSet("test", configs, ttau = True, len_tta = 10) 
+    test_loader = FER2013DataSet("test", configs, ttau = False, len_tta = 48) 
 
 print(configs)
 
