@@ -107,6 +107,11 @@ if configs['freeze_cbam'] == True:
                 for param in layer[idx].CbamBlock.parameters():
                     param.requires_grad = True
             
+    for name, layer in model.named_children():
+        if name == 'duckBlock':
+            for param in layer.parameters():
+                param.requires_grad = True
+                
 for name, param in model.named_parameters():
     print(f"{name}: {param.requires_grad}")
 
